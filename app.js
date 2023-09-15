@@ -30,7 +30,7 @@ app.post("/register",async(req,res)=>{
         username : username,
         password: bcrypt.hashSync(password,8)
     })
-    res.send("User registration sucessFull")
+    res.redirect("/login")
 })
 
 
@@ -38,6 +38,43 @@ app.post("/register",async(req,res)=>{
     // if(!email || !username || !password){
     //     return res.send("please fill the requirements")
     // }
+
+
+
+    //for LOGIN form
+    app.get("/login",(req,res)=>{
+        res.render("login.ejs")
+    })
+
+    app.post("/login",async(req,res)=>{
+        const email = req.body.email 
+        const password = req.body.password 
+        
+         // 1st - tyo email users table ma xa ki nai check
+      const userExist =  await users.findAll({
+            where : {
+                email : email
+            }
+        })
+        if(userExist.length>0){
+            //2nd - password pani check garnu paryo
+           const isMatch = bcrypt.compareSync(password,userExist[0].password)
+           if(isMatch){
+            res.send("Logged in successfully")
+           }else{
+            res.send("Invalid Email or password")
+           }
+
+
+        }else{
+            res.send("Invalid Email or password")
+        }
+
+
+    })
+
+
+
 
 
 
